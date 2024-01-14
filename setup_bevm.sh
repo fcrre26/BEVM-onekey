@@ -22,8 +22,8 @@ function get_node_name() {
   fi
 
   echo $node_name > $NODE_NAME_FILE
-
 }
+
 
 # 下载节点程序
 function download_node() {
