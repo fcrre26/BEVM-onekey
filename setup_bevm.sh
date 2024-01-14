@@ -24,6 +24,10 @@ function get_node_name() {
   echo $node_name > $NODE_NAME_FILE
 
 }
+if [ ! -s "$NODE_NAME_FILE" ]; then
+  echo "节点名称文件为空，请检查节点名称获取步骤"
+  exit 1
+fi
 
 # 下载节点程序
 function download_node() {
