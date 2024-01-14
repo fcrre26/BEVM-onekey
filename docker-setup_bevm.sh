@@ -19,7 +19,7 @@ function ... ... ... checkResourceUsage(){
   fi
 }
 
-# ... ... ... 运行指定数量的容器
+# 运行指定数量的容器
 function runContainers(){
   # 询问用户要运行的节点数量
   read -p "请输入节点数量: " count
