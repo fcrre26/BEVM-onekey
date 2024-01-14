@@ -48,7 +48,7 @@ function start_node() {
 
   echo "开始启动节点..."
 
-  nohup /root/$NODE_PROCESS_NAME --chain=testnet --name="$(cat $NODE_NAME_FILE)" --pruning=archive > $NODE_LOG_FILE 2>&1 &
+  nohup /root/$NODE_PROCESS_NAME --chain=testnet --name="$(cat $NODE_NAME_FILE)" --pruning=archive--telemetry-url "wss://telemetry.bevm.io/submit 0" > $NODE_LOG_FILE 2>&1 &
 
   pid=$!
 
