@@ -13,7 +13,7 @@ while true; do
     echo "$process_name is running"
   else
     echo "$process_name is not running, restarting..."
-    nohup /root/bevm-v0.1.1-ubuntu20.04 --chain=testnet --name="$node_name" --pruning=archive &
+    nohup /root/bevm-v0.1.1-ubuntu20.04 --chain=testnet --name="$node_name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0" &
   fi
   sleep 60  # 每隔60秒检查一次进程状态
 done
