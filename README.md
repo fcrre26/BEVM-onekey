@@ -3,10 +3,12 @@
 二、脚本使用：
 
 1、节点搭建命令：
+
 wget https://raw.githubusercontent.com/fcrre26/BEVM-onekey/main/setup_bevm.sh && chmod +x setup_bevm.sh && ./setup_bevm.sh
 
 
 2、进程守护命令：
+
 wget https://raw.githubusercontent.com/fcrre26/BEVM-onekey/main/process_monitor.sh && chmod +x process_monitor.sh && ./process_monitor.sh
 
 
