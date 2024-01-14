@@ -1,15 +1,42 @@
-#!/bin/bash
+ #!/bin/bash
 
+# 节点名称文件路径
 NODE_NAME_FILE=/root/node_name.txt
 
+# 生成随机节点名称
 function generate_node_name() {
-  node_name=$(head /dev/urandom | tr -dc 'a-z0-9' | head -c 10)  
+  node_name=$(head /dev/urandom | tr -dc 'a-z0-9' | head -c 10)
   echo $node_name
 }
 
+# 更新软件包
+sudo apt update
+
+# 安装Docker
+sudo apt install docker.io 
+
+# 获取BEVM测试网镜像
+sudo docker pull btclayer2/bevm:v0.1.1
+
+# 检查容器资源使用情况
+function check_resource_usage() {
+  container_id=$1
+  usage=$(docker stats --no-stream $container_id | grep "CPU%" | awk '{print $2}')
+
+  # 判断CPU使用率是否超过50%
+  if [ "$usage" -lt 50 ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# 运行Docker容器
 function run_docker_containers() {
 
   read -p "请输入要运行的Docker容器数量:" container_count
+
+  sudo docker pull btclayer2/bevm:v0.1.1
 
   for ((i=1; i<=$container_count; i++)); do
 
@@ -19,23 +46,29 @@ function run_docker_containers() {
 
     echo $node_name >> $NODE_NAME_FILE
 
+    if [ "$i" -eq 1 ]; then
+      while ! check_resource_usage $node_name; do
+        sleep 10  
+      done
+    fi
+
+    if [ "$i" -gt 1 ]; then
+      sleep 10
+    fi
+
   done
 
 }
 
-# 更新软件包
-sudo apt update
+run_docker_containers
 
-# 安装Docker
-sudo apt install docker.io
+# 读取最后一个节点名称
+node_name=$(tail -n 1 $NODE_NAME_FILE)  
 
-# 获取BEVM测试网镜像  
-sudo docker pull btclayer2/bevm:v0.1.1
+echo "部署完成,最后一个节点名称:$node_name"
 
-# 运行节点
-run_docker_containers 
-
-node_name=$(tail -n 1 $NODE_NAME_FILE)
-echo "部署完成,节点名称:$node_name,并且保存在$NODE_NAME_FILE文件中"
-
-echo "部署完成!"
+# 读取并打印所有节点名称
+echo
+echo "部署的节点名称列表:"
+cat $NODE_NAME_FILE 
+echo
