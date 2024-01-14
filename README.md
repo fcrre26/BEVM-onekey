@@ -19,7 +19,7 @@
     wget https://raw.githubusercontent.com/fcrre26/BEVM-onekey/main/docker-setup_bevm.sh && chmod +x docker-setup_bevm.sh && ./docker-setup_bevm.sh
 
 
-3、 docker进程守护命令：
+4、 docker进程守护命令：
 
     wget https://raw.githubusercontent.com/fcrre26/BEVM-onekey/main/docker-process_monitor.sh && chmod +x docker-process_monitor.sh && ./docker-process_monitor.sh
 
