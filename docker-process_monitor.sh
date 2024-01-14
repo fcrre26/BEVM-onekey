@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# 检查所有容器的状态
+# 获取所有容器的 ID
 containers=$(docker ps -q)
 
+# 遍历每个容器并检查其状态
 for container in $containers; do
   if [ "$(docker inspect -f '{{.State.Running}}' $container 2>/dev/null)" = "true" ]; then
     echo "容器 $container 正在运行."
