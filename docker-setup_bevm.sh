@@ -11,9 +11,7 @@ function generateNodeName(){
 
 # 检查容器的资源使用情况
 function checkResourceUsage(){
-  container_id=$1
-  usage=$(docker stats --no-stream "$container_id" | grep "CPU%" | awk '{print $2}')
-
+  usage=$(docker stats --no-stream "$1" | grep "CPU%" | awk '{print $2}')
   if [[ "$usage" -lt 50 ]]; then
     return 0
   else
@@ -23,32 +21,39 @@ function checkResourceUsage(){
 
 # 运行指定数量的容器
 function runContainers(){
-
   # 询问用户要运行的节点数量
   read -p "请输入节点数量: " count
 
-  # 从Docker Hub拉取镜像
-  docker pull btclayer2/bevm:latest
+  # 更新软件包
+  sudo apt update
+
+  # 安装 Docker
+  sudo apt install docker.io
+
+  # 获取 BEVM 测试网节点镜像
+  sudo docker pull btclayer2/bevm:v0.1.1
 
   # 循环运行指定数量的容器
   for i in $(seq 1 $count); do
-
-    # 生成节点名称
     name=$(generateNodeName)   
-
-    # 运行容器并指定节点名称
-    docker run -d --name $name btclayer2/bevm:latest bevm --chain=testnet
-
-    # 将节点名称写入文件
+    sudo docker run -d --name $name btclayer2/bevm:v0.1.1 bevm --chain=testnet --name="$name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
     echo $name >> $NODE_NAME_FILE
 
     # 检查资源使用情况，直到满足条件
-    while checkResourceUsage $name; do
+    while true; do
+      all_below_threshold=true
+      for container in $(sudo docker ps --format "{{.Names}}"); do
+        if ! checkResourceUsage $container; then
+          all_below_threshold=false
+          break
+        fi
+      done
+      if $all_below_threshold; then
+        break
+      fi
       sleep 10
     done
-
   done
-
 }
 
 # 检查docker命令是否可用
