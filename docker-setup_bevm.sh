@@ -30,3 +30,22 @@ sudo docker pull btclayer2/bevm:v0.1.1
 # 运行节点（你可以自己命名节点）
 get_node_name
 sudo docker run -d btclayer2/bevm:v0.1.1 bevm --chain=testnet --name="$node_name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
+
+# 输出部署完成信息
+echo "部署完成,节点名称:$node_name,并且保存在$NODE_NAME_FILE文件中"
+
+# 选择是否查看日志
+read -p "是否需要查看日志?
+1. 查看
+2. 退出
+回车键默认查看:" input
+
+if [ "$input" == "1" ]; then
+  view_log
+elif [ "$input" == "2" ]; then
+  exit 0
+else
+  view_log
+fi
+
+echo "部署完成!"
