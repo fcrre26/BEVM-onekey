@@ -23,12 +23,6 @@ function get_node_name() {
 
   echo $node_name > $NODE_NAME_FILE
 
-}
-if [ ! -s "$NODE_NAME_FILE" ]; then
-  echo "节点名称文件为空，请检查节点名称获取步骤"
-  exit 1
-fi
-
 # 下载节点程序
 function download_node() {
 
@@ -47,17 +41,20 @@ function download_node() {
 
 # 配置并启动节点
 function start_node() {
+  if [ ! -s "$NODE_NAME_FILE" ]; then
+    echo "节点名称文件为空，请检查节点名称获取步骤"
+    exit 1
+  fi
 
-  chmod +x /root/$NODE_PROCESS_NAME
+  ... chmod +x /root/$NODE_PROCESS_NAME
 
   echo "开始启动节点..."
 
-  nohup /root/$NODE_PROCESS_NAME --chain=testnet --name="$(cat $NODE_NAME_FILE)" --pruning=archive > $NODE_LOG_FILE 2>&1 &disown
+  nohup /root/$NODE_PROCESS_NAME --chain=testnet --name="$(cat $NODE_NAME_FILE)" --pruning=archive > $NODE_LOG_FILE 2>&1 & disown
 
   pid=$!
 
   echo "节点进程启动,PID为:$pid"
-
 }
 
 # 检查节点状态
