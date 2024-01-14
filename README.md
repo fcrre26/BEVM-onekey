@@ -14,7 +14,7 @@
 
     
 
-3、 docker节点搭建命令：
+3、 docker节点搭建命令(可以选择多容器-多节点)：
 
     wget https://raw.githubusercontent.com/fcrre26/BEVM-onekey/main/docker-setup_bevm.sh && chmod +x docker-setup_bevm.sh && ./docker-setup_bevm.sh
 
