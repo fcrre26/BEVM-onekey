@@ -1,62 +1,57 @@
 #!/bin/bash
 
-# 节点名称文件路径
-NODE_NAME_FILE=/root/node_name.txt
+NODE_NAME_FILE=/root/node_names.txt
 
-# 生成随机节点名称
-function generate_node_name(){
-  node_name=$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 10)
-  echo $node_name
+function generateNodeName(){
+  name=$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 10)
+  echo $name
 }
 
-# 检查容器资源使用情况
-function check_resource_usage(){
+function checkResourceUsage(){
   container_id=$1
   usage=$(docker stats --no-stream "$container_id" | grep "CPU%" | awk '{print $2}')
 
   if [[ "$usage" -lt 50 ]]; then
     return 0
   else
-    return 1
+    return 1 
   fi
 }
 
-# 运行Docker容器
-function run_docker_containers(){
+function runContainers(){
 
-  read -p "请输入要运行的Docker容器数量:" container_count
+  read -p "请输入节点数量: " count
 
-  sudo docker pull btclayer2/bevm:v0.1.1
+  docker pull btclayer2/bevm:latest
 
-  for ((i=1;i<=container_count;i++)); do
+  for i in $(seq 1 $count); do
 
-    node_name=$(generate_node_name)
+    name=$(generateNodeName)   
 
-    sudo docker run -d btclayer2/bevm:v0.1.1 bevm --chain=testnet --name="$node_name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
+    docker run -d --name $name btclayer2/bevm:latest bevm --chain=testnet
 
-    echo "$node_name" >> "$NODE_NAME_FILE"
+    echo $name >> $NODE_NAME_FILE
 
-    if [[ "$i" -eq 1 ]]; then
-      while ! check_resource_usage "$node_name"; do
-        sleep 10  
-      done
-    fi
-
-    if [[ "$i" -gt 1 ]]; then
+    while checkResourceUsage $name; do
       sleep 10
-    fi
+    done
 
   done
 
 }
 
-run_docker_containers
+docker_cmd=$(which docker)
 
-node_name=$(tail -n 1 "$NODE_NAME_FILE")
+if ! command -v $docker_cmd &> /dev/null; then
+  echo "请先安装docker"
+  exit 1
+fi
 
-echo "部署完成,最后一个节点名称:$node_name"
+chmod +x $0
 
-echo
-echo "部署的节点名称列表:"
-cat "$NODE_NAME_FILE"
-echo
+runContainers
+
+name=$(tail -n 1 $NODE_NAME_FILE)
+echo "部署完成,最后一个节点:$name"
+echo "节点列表:"
+cat $NODE_NAME_FILE
