@@ -17,7 +17,7 @@ function get_node_name() {
     read -p "请输入节点名称: " node_name
     node_name=${node_name// /}
   else  
-    node_name=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10)
+    node_name=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10-15)
     echo "随机生成的节点名称为: $node_name"
   fi
 
