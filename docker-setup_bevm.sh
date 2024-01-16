@@ -4,7 +4,7 @@
 NODE_NAME_FILE=/root/node_names.txt
 
 # 打开防火墙端口
-sudo ufw allow 2022
+sudo ufw allow 20222
 sudo ufw allow 8086
 sudo ufw allow 8087
 sudo ufw status
