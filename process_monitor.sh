@@ -13,20 +13,21 @@ then
 else
     # 创建systemd服务文件
     cat <<EOT >> /etc/systemd/system/$process_name.service
-    # ... ... ... Process
-    After=network.target
+[Unit]
+Description=BEVM Process
+After=network.target
 
-    [Service]
-    User=root
-    WorkingDirectory=/root
-    ExecStart=/root/bevm-v0.1.1-ubuntu20.04 --chain=testnet --name="$node_name" ... ... ... ... ... --pruning=archive --telemetry-url ... ... ... "wss://telemetry.bevm.io/submit 0"
-    Restart=always
-    StandardOutput=file:/root/bevm.out.log
-    StandardError=file:/root/bevm.err.log
+[Service]
+User=root
+WorkingDirectory=/root
+ExecStart=/root/bevm-v0.1.1-ubuntu20.04 --chain=testnet --name="$node_name" ... ... ... ... ... --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
+Restart=always
+StandardOutput=file:/root/bevm.out.log
+StandardError=file:/root/bevm.err.log
 
-    [Install]
-    WantedBy=multi-user.target
-    EOT
+[Install]
+WantedBy=multi-user.target
+EOT
 
     # 重新加载systemd配置
     sudo systemctl daemon-reload
