@@ -23,6 +23,11 @@ sudo apt update
 # 打开防火墙端口
 sudo ufw allow 20222
 sudo ufw allow 8086
+sudo ufw allow 8087
+sudo ufw allow 30333
+sudo ufw allow 30334
+sudo ufw status
+
 # 安装docker并拉取镜像
 sudo apt update
 sudo apt install docker.io -y
