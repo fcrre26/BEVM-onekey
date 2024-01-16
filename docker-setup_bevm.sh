@@ -6,13 +6,15 @@ NODE_NAME_FILE=/root/node_names.txt
 # 清空节点名称文件
 > "$NODE_NAME_FILE"
 
-# 获取节点名称并写入文件
+# 获取节点数量
 read -p "请输入节点数量: " NODE_COUNT
-for ((i=1; ... ... ... i<=$NODE_COUNT; ... i++)); do
+
+# 获取节点名称并写入文件
+for ((i=1; i<=$NODE_COUNT; i++)); do
   read -p "请输入第 $i 个节点的名称: " node_name
   node_name=${node_name// /}  # 移除空格
   echo "$node_name" >> "$NODE_NAME_FILE"
-  echo ... ... ... "添加节点名称: ... $node_name"
+  echo "添加节点名称: $node_name"
 done
 
 # 打开防火墙端口
