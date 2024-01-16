@@ -34,30 +34,15 @@ sudo docker pull btclayer2/bevm:v0.1.1
 
 # 运行容器
 for ((i = 1; i <= NODE_COUNT; i++)); do
-  name="node$i"
-  echo "启动容器 $name 中..."
-  sudo docker run -d --name $name btclayer2/bevm:v0.1.1 bevm --chain=testnet --name="$name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
-  echo "容器 $name 启动完成"
-  echo "容器 $name CPU 占比信息:"
-  docker stats --no-stream $name | grep "CPU%"
-  echo $name >> $NODE_NAME_FILE  # 只将用户输入的节点名称写入节点列表文件中
-  while true; do
-    all_below_threshold=true
-    for container in $(sudo docker ps --format "{{.Names}}"); do
-      if ! checkResourceUsage $container; then
-        all_below_threshold=false
-        break
-      fi
-    done
-    if $all_below_threshold; then
-      break
-    fi
-    echo "容器 $name CPU 占比超过50%，等待中..."
-    sleep 10
-  done
+  node_name=$(sed -n "${i}p" "$NODE_NAME_FILE")
+  echo "启动容器 $node_name 中..."
+  sudo docker run -d --name $node_name btclayer2/bevm:v0.1.1 bevm --chain=testnet --name="$node_name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
+  echo "容器 $node_name 启动完成"
+  echo "容器 $node_name CPU 占比信息:"
+  docker stats --no-stream $node_name --format "table {{.Name}}\t{{.CPUPerc}}"
 done
 
 # 输出部署完成的消息以及节点列表
-echo "部署完成,最后一个节点: node$NODE_COUNT"
+echo "部署完成,最后一个节点: $node_name"
 echo "节点列表:"
 cat $NODE_NAME_FILE
