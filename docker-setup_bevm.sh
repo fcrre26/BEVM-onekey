@@ -9,40 +9,25 @@ sudo ufw allow 8086
 sudo ufw allow 8087
 sudo ufw status
 
+# 获取节点数量
+read -p "请输入节点数量: " count
+
 # 获取节点名称
 function get_node_name() {
-  read -p "请选择节点名称方式:
-  1. 随机节点名称(回车默认)
-  2. 手工输入节点名称:" option
-
-  if [ "$option" = "2" ]; then
-    read -p "请输入节点名称: " node_name
-    node_name=${node_name// /}
-  else  
-    node_name=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10)
-    echo "随机生成的节点名称为: $node_name"
-  fi
-
+  read -p "请输入节点名称: " node_name
+  node_name=${node_name// /}
   echo $node_name > $NODE_NAME_FILE
 }
 
-# 运行指定数量的容器
-function runContainers(){
-  # 询问用户要运行的节点数量
-  read -p "请输入节点数量: " count
-
-  # 获取 BEVM 测试网节点镜像
+# 循环运行指定数量的容器
+for i in $(seq 1 $count); do
+  get_node_name  # 调用获取节点名称的函数
+  name=$(cat $NODE_NAME_FILE)  # 从文件中读取节点名称
+  echo "启动容器 $name 中..."
   sudo docker pull btclayer2/bevm:v0.1.1
-
-  # 循环运行指定数量的容器
-  for i in $(seq 1 $count); do
-    get_node_name  # 调用获取节点名称的函数
-    name=$(cat $NODE_NAME_FILE)  # 从文件中读取节点名称
-    echo "启动容器 $name 中..."
-    sudo docker run -d -v /var/lib/node_bevm_test_storage:/root/.local/share/bevm --name $name btclayer2/bevm:v0.1.1 bevm --chain=testnet --name="$name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
-    echo "容器 $name 启动完成"
-  done
-}
+  sudo docker run -d -v /var/lib/node_bevm_test_storage:/root/.local/share/bevm --name $name btclayer2/bevm:v0.1.1 bevm --chain=testnet --name="$name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
+  echo "容器 $name 启动完成"
+done
 
 # 安装 Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
