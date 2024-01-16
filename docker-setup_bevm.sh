@@ -17,6 +17,9 @@ for ((i=1; i<=$NODE_COUNT; i++)); do
   echo "添加节点名称: $node_name"
 done
 
+# 更新软件包
+sudo apt update
+
 # 打开防火墙端口
 sudo ufw allow 20222
 sudo ufw allow 8086
