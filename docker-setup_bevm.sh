@@ -13,6 +13,14 @@ for ((i=1; i<=$NODE_COUNT; i++)); do
   echo "添加节点名称: $node_name"
 done
 
+# 打开防火墙端口
+sudo ufw allow 20222
+sudo ufw allow 8086
+sudo ufw allow 8087
+sudo ufw allow 30333
+sudo ufw allow 30334
+sudo ufw status
+
 # 检查容器的资源使用情况
 function checkResourceUsage() {
   usage=$(docker stats --no-stream "$1" | grep "CPU%" | awk '{print $2}' | cut -d. -f1)
