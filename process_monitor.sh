@@ -7,7 +7,7 @@ node_name=$(cat /root/node_name.txt)
 process_name="bevm-v0.1.1-ubuntu20.04"
 
 # 定义日志文件路径
-log_file="/var/log/process_monitor.log"
+log_file="/root/process_monitor.log"
 
 # 监控进程并自动重启
 while true; do
