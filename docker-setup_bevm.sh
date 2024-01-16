@@ -3,6 +3,16 @@
 # 定义保存节点名称的文件路径
 NODE_NAME_FILE=/root/node_names.txt
 
+# 获取节点数量
+read -p "请输入节点数量: " count
+
+# 获取节点名称并写入文件
+for i in $(seq 1 $count); do
+  read -p "请输入节点名称 $i: " node_name
+  node_name=${node_name// ... /}
+  echo $node_name >> $NODE_NAME_FILE  # 使用 >> 以追加方式写入文件
+done
+
 # 打开防火墙端口
 sudo ufw allow 20222
 sudo ufw allow 8086
@@ -21,23 +31,12 @@ if ! command -v $docker_cmd &> /dev/null; then
   exit 1
 fi
 
-# 获取节点数量
-read -p "请输入节点数量: " count
-
-# 获取节点名称
-function get_node_name() {
-  read -p "请输入节点名称: " node_name
-  node_name=${node_name// /}
-  echo $node_name > $NODE_NAME_FILE
-}
-
 # 循环运行指定数量的容器
 for i in $(seq 1 $count); do
-  get_node_name  # 调用获取节点名称的函数
-  name=$(cat $NODE_NAME_FILE)  # 从文件中读取节点名称
+  name=$(sed -n "${i}p" $NODE_NAME_FILE)  # 从文件中读取节点名称
   echo "启动容器 $name 中..."
   sudo docker pull btclayer2/bevm:v0.1.1
-  sudo docker run -d -v /var/lib/node_bevm_test_storage:/root/.local/share/bevm --name $name btclayer2/bevm:v0.1.1 bevm --chain=testnet --name="$name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
+  sudo docker run -d -v ... ... /var/lib/node_bevm_test_storage:/root/.local/share/bevm --name $name btclayer2/bevm:v0.1.1 bevm --chain=testnet --name="$name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit ... 0"
   echo "容器 $name 启动完成"
 done
 
