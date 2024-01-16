@@ -6,35 +6,34 @@ node_name=$(cat /root/node_name.txt)
 # 定义进程名称
 process_name="bevm-v0.1.1-ubuntu20.04"
 
-# 停止旧的进程
-sudo systemctl stop $process_name
+# 检查进程是否在运行
+if pgrep -x "$process_name" > /dev/null
+then
+    echo "进程 $process_name 已经在运行，无需启动新的进程。"
+else
+    # 创建systemd服务文件
+    cat <<EOT >> /etc/systemd/system/$process_name.service
+    # ... ... ... Process
+    After=network.target
 
-# 添加延迟
-sleep 5
+    [Service]
+    User=root
+    WorkingDirectory=/root
+    ExecStart=/root/bevm-v0.1.1-ubuntu20.04 --chain=testnet --name="$node_name" ... ... ... ... ... --pruning=archive --telemetry-url ... ... ... "wss://telemetry.bevm.io/submit 0"
+    Restart=always
+    StandardOutput=file:/root/bevm.out.log
+    StandardError=file:/root/bevm.err.log
 
-# 创建systemd服务文件
-cat <<EOT >> /etc/systemd/system/$process_name.service
-[Unit]
-Description=BEVM Process
-After=network.target
+    [Install]
+    WantedBy=multi-user.target
+    EOT
 
-[Service]
-User=root
-WorkingDirectory=/root
-ExecStart=/root/bevm-v0.1.1-ubuntu20.04 --chain=testnet --name="$node_name" ... ... ... --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
-Restart=always
-StandardOutput=file:/root/bevm.out.log
-StandardError=file:/root/bevm.err.log
+    # 重新加载systemd配置
+    sudo systemctl daemon-reload
 
-[Install]
-WantedBy=multi-user.target
-EOT
+    # 启动服务并设置开机自启
+    sudo systemctl start $process_name
+    sudo systemctl enable $process_name
 
-# 重新加载systemd配置
-sudo systemctl daemon-reload
-
-# 启动服务并设置开机自启
-sudo systemctl start $process_name
-sudo systemctl enable $process_name
-
-echo "-----进程守护已经成功开启！-----"
+    echo "进程 $process_name 启动成功！"
+fi
