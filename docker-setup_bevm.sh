@@ -29,6 +29,10 @@ for ((i=1; i<=$node_count; i++)); do
   log_message "添加节点名称: $node_name"
 done
 
+# 安装 Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
 # 打开防火墙端口
 ports=(30333 30334 20222 8086 8087)
 for port in "${ports[@]}"; do
