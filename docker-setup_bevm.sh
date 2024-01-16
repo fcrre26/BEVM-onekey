@@ -76,7 +76,6 @@ chmod +x $0
 runContainers
 
 # 输出部署完成的消息以及节点列表
-name=$(tail -n 1 $NODE_NAME_FILE)
-echo "部署完成,最后一个节点:$name"
+echo "部署完成,最后一个节点: node$NODE_COUNT"
 echo "节点列表:"
 cat $NODE_NAME_FILE
