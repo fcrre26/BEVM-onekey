@@ -29,7 +29,6 @@ sudo ufw allow 30334
 sudo ufw status
 
 # 安装docker并拉取镜像
-sudo apt update
 sudo apt install docker.io -y
 sudo docker pull btclayer2/bevm:v0.1.1
 
