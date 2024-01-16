@@ -84,7 +84,7 @@ check_node
 echo "部署完成,节点名称:$node_name,并且保存在$NODE_NAME_FILE文件中"
 
 # 打开防火墙端口
-sudo ufw allow 2022
+sudo ufw allow 20222
 sudo ufw allow 8086
 sudo ufw allow 8087
 sudo ufw status
