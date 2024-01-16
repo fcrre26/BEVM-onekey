@@ -22,7 +22,7 @@ After=network.target
 [Service]
 User=root
 WorkingDirectory=/root
-ExecStart=/root/bevm-v0.1.1-ubuntu20.04 --chain=testnet --name="$node_name" ... ... ... --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
+ExecStart=/root/bevm-v0.1.1-ubuntu20.04 --chain=testnet --name="$node_name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
 Restart=always
 StandardOutput=file:/root/bevm.out.log
 StandardError=file:/root/bevm.err.log
