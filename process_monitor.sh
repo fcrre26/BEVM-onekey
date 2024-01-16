@@ -6,23 +6,27 @@ node_name=$(cat /root/node_name.txt)
 # 定义进程名称
 process_name="bevm-v0.1.1-ubuntu20.04"
 
-# 安装supervisord
-sudo apt-get update
-sudo apt-get install supervisor
+# 创建systemd服务文件
+cat <<EOT >> /etc/systemd/system/$process_name.service
+[Unit]
+Description=BEVM Process
+After=network.target
 
-# 创建supervisord配置文件
-cat <<EOT >> /etc/supervisor/conf.d/process_monitor.conf
-[program:$process_name]
-command=/root/bevm-v0.1.1-ubuntu20.04 --chain=testnet --name="$node_name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
-autostart=true
-autorestart=true
-stderr_logfile=/root/bevm.err.log
-stdout_logfile=/root/bevm.out.log
+[Service]
+User=root
+WorkingDirectory=/root
+ExecStart=/root/bevm-v0.1.1-ubuntu20.04 --chain=testnet --name="$node_name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
+Restart=always
+StandardOutput=file:/root/bevm.out.log
+StandardError=file:/root/bevm.err.log
+
+[Install]
+WantedBy=multi-user.target
 EOT
 
-# 重新加载supervisord配置
-sudo supervisorctl reread
-sudo supervisorctl update
+# 重新加载systemd配置
+sudo systemctl daemon-reload
 
-# 设置supervisord开机自启
-sudo systemctl enable supervisord
+# 启动服务并设置开机自启
+sudo systemctl start $process_name
+sudo systemctl enable $process_name
