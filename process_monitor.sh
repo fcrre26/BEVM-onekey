@@ -36,5 +36,5 @@ EOT
     sudo systemctl start $process_name
     sudo systemctl enable $process_name
 
-    echo "进程 $process_name 启动成功！"
+    echo "进程 $process_name 保护启动成功！"
 fi
