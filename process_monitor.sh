@@ -6,6 +6,9 @@ node_name=$(cat /root/node_name.txt)
 # 定义进程名称
 process_name="bevm-v0.1.1-ubuntu20.04"
 
+# 停止旧的进程
+sudo systemctl stop $process_name
+
 # 创建systemd服务文件
 cat <<EOT >> /etc/systemd/system/$process_name.service
 [Unit]
@@ -15,7 +18,7 @@ After=network.target
 [Service]
 User=root
 WorkingDirectory=/root
-ExecStart=/root/bevm-v0.1.1-ubuntu20.04 --chain=testnet --name="$node_name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
+ExecStart=/root/bevm-v0.1.1-ubuntu20.04 --chain=testnet --name="$node_name" ... ... ... --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
 Restart=always
 StandardOutput=file:/root/bevm.out.log
 StandardError=file:/root/bevm.err.log
@@ -31,4 +34,4 @@ sudo systemctl daemon-reload
 sudo systemctl start $process_name
 sudo systemctl enable $process_name
 
-echo "进程守护已经成功开启！"
+echo "-----进程守护已经成功开启！-----"
