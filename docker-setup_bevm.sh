@@ -9,10 +9,22 @@ sudo ufw allow 8086
 sudo ufw allow 8087
 sudo ufw status
 
-# 生成一个随机的节点名称
-function generateNodeName(){
-  name=$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 10)
-  echo $name
+# 获取节点名称
+function get_node_name() {
+
+  read -p "请选择节点名称方式:
+  1. 随机节点名称(回车默认)
+  2. 手工输入节点名称:" option
+
+  if [ "$option" = "2" ]; then
+    read -p "请输入节点名称: " node_name
+    node_name=${node_name// /}
+  else  
+    node_name=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10)
+    echo "随机生成的节点名称为: $node_name"
+  fi
+
+  echo $node_name > $NODE_NAME_FILE
 }
 
 # 检查容器的资源使用情况
