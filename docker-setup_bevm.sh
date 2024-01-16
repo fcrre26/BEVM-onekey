@@ -36,7 +36,8 @@ function runContainers(){
 
   # 循环运行指定数量的容器
   for i in $(seq 1 $count); do
-    name=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10)   
+    get_node_name  # 调用获取节点名称的函数
+    name=$(cat $NODE_NAME_FILE)  # 从文件中读取节点名称
     echo "启动容器 $name 中..."
     sudo docker run -d -v /var/lib/node_bevm_test_storage:/root/.local/share/bevm --name $name btclayer2/bevm:v0.1.1 bevm --chain=testnet --name="$name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
     echo "容器 $name 启动完成"
