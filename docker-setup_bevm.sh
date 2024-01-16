@@ -44,6 +44,14 @@ for port in "${ports[@]}"; do
   log_message "已打开防火墙端口: $port"
 done
 
+# 将配置写入 /etc/docker/daemon.json
+sudo tee /etc/docker/daemon.json > /dev/null <<EOF
+{
+  "cgroup-parent": "cgroup",
+  "swappiness": 0
+}
+EOF
+
 # 拉取 Docker 镜像并运行容器
 for ((i=1; i<=$node_count; i++)); do
   name=$(sed -n "${i}p" "$NODE_NAME_FILE")  # 从文件中读取节点名称
