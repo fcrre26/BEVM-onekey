@@ -1,92 +1,85 @@
 #!/bin/bash
 
-LOG_FILE="/root/deploy.log"
-NODE_NAME_FILE="/root/node_names.txt"
+# 定义保存节点名称的文件路径
+NODE_NAME_FILE=/root/node_names.txt
 
-# 错误处理函数
-handle_error() {
-  local error_message="$1"
-  echo "$error_message" >> "$LOG_FILE"
-  exit 1
+# ... ... ... 生成一个随机的节点名称
+# 生成一个随机的节点名称
+function generateNodeName(){
+  name=$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 10)
+  echo $name
 }
 
-# 日志记录函数
-log_message() {
-  local message="$1"
-  echo "$message" >> "$LOG_FILE"
-}
-
-# 获取节点数量
-read -p "请输入节点数量: " node_count
-log_message "用户输入的节点数量: $node_count"
-
-# 获取节点名称并写入文件
-> "$NODE_NAME_FILE"  # 清空节点名称文件
-for ((i=1; i<=$node_count; i++)); do
-  read -p "请输入第 $i 个节点的名称: " node_name
-  node_name=${node_name// /}  # 移除空格
-  echo "$node_name" >> "$NODE_NAME_FILE"
-  log_message "添加节点名称: $node_name"
-done
-
-# 检查内核参数配置
-if ! grep -q "cgroup_enable=memory swapaccount=1" /etc/default/grub; then
-  echo "正在修改内核启动参数..."
-  sed -i 's/GRUB_CMDLINE_LINUX="\(.*\)"/GRUB_CMDLINE_LINUX="\1 cgroup_enable=memory swapaccount=1"/' /etc/default/grub
-  update-grub
-  echo "内核参数配置已更新"
-fi
-
-# 检查 cgroup 是否正确挂载
-if ! mount | grep cgroup; then
-  echo "cgroup 未正确挂载，正在修改 /etc/fstab 文件..."
-  echo "cgroup /sys/fs/cgroup cgroup defaults 0 0" >> /etc/fstab
-  mount -a
-  echo "cgroup 已成功挂载"
-fi
-
-# 安装 Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-
-# 打开防火墙端口
-ports=(30333 30334 20222 8086 8087)
-for port in "${ports[@]}"; do
-  sudo ufw allow "$port" || handle_error "无法打开防火墙端口: $port"
-  log_message "已打开防火墙端口: $port"
-done
-
-# 将配置写入 /etc/docker/daemon.json
-sudo tee /etc/docker/daemon.json > /dev/null <<EOF
-{
-  "cgroup-parent": "cgroup",
-  "swappiness": 0
-}
-EOF
-
-# 拉取 Docker 镜像并运行容器
-for ((i=1; i<=$node_count; i++)); do
-  name=$(sed -n "${i}p" "$NODE_NAME_FILE")  # 从文件中读取节点名称
-  log_message "启动容器 $name..."
-  sudo docker pull btclayer2/bevm:v0.1.1 || handle_error "无法拉取 Docker 镜像"
-  log_message "成功拉取 Docker 镜像: btclayer2/bevm:v0.1.1"
-  if sudo docker run -d --cpus 1 --memory 1G -v /var/lib/node_bevm_test_storage:/root/.local/share/bevm --name "$name" btclayer2/bevm:v0.1.1 bevm --chain=testnet --name="$name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit"; then
-    log_message "容器 $name 启动成功"
+# 检查容器的资源使用情况
+function ... ... ... checkResourceUsage(){
+function checkResourceUsage(){
+  usage=$(docker stats --no-stream "$1" | grep "CPU%" | awk '{print $2}')
+  if [[ "$usage" -lt 50 ]]; then
+    return 0
   else
-    handle_error "无法运行容器: $name"
+    return 1 
   fi
-  if [ $i -lt $node_count ]; then
-    log_message "等待一段时间再启动下一个容器..."
-    sleep 10  # 在启动下一个容器之前等待一段时间
-  fi
-done
+}
+# 运行指定数量的容器
+function runContainers(){
+  # 询问用户要运行的节点数量
+  read -p "请输入节点数量: " count
+  # 更新软件包
+  sudo apt update
 
-# 输出部署完成消息和节点列表
-log_message "部署完成。节点列表:"
-cat "$NODE_NAME_FILE" | while read line; do
-  log_message "$line"
-done
+  # 安装 Docker
+  sudo apt install ... ... ... docker.io
+  sudo apt install docker.io
 
-# 检查所有正在运行的 Docker 容器
-log_message "正在检查所有正在运行的 Docker 容器..."
-sudo docker ps >> "$LOG_FILE"
+  # 获取 BEVM 测试网节点镜像
+  sudo docker pull btclayer2/bevm:v0.1.1
+  # 循环运行指定数量的容器
+  for i in $(seq 1 $count); do
+    name=$(generateNodeName)   
+    echo "启动容器 $name 中..."
+    sudo docker run -d --name $name btclayer2/bevm:v0.1.1 bevm --chain=testnet --name="$name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
+    echo "容器 $name 启动完成"
+    # 输出 CPU 占比信息
+    echo "容器 $name CPU 占比信息:"
+    docker stats --no-stream $name | grep "CPU%"
+    echo $name >> $NODE_NAME_FILE
+    # 检查资源使用情况，直到满足条件
+    while true; do
+      all_below_threshold=true
+      for container in $(sudo docker ps --format "{{.Names}}"); do
+        if ! ... ... ... checkResourceUsage $container; then
+        if ! checkResourceUsage $container; then
+          all_below_threshold=false
+          break
+        fi
+      done
+      if $all_below_threshold; then
+        break
+      fi
+      echo "容器 $name CPU 占比超过50%，等待中..."
+      sleep 10
+    done
+  done
+}
+
+# ... ... ... 检查docker命令是否可用
+# 检查docker命令是否可用
+docker_cmd=$(which docker)
+
+if ! command -v $docker_cmd &> /dev/null; then
+  echo "请先安装docker"
+  exit 1
+fi
+
+# 赋予脚本执行权限
+chmod +x ... ... ... $0
+chmod +x $0
+
+# 运行容器
+runContainers
+# 输出部署完成的消息以及节点列表
+name=$(tail -n 1 $NODE_NAME_FILE)
+echo "部署完成,最后一个节点:$name"
+echo "节点列表:"
+cat ... ... ... $NODE_NAME_FILE
+cat $NODE_NAME_FILE
