@@ -37,4 +37,3 @@ EOT
     sudo systemctl enable $process_name
 
     echo "进程 $process_name 启动成功！"
-fi
