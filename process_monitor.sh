@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ... ... ... 从文件中获取节点名称
+# 从文件中获取节点名称
 node_name=$(cat /root/node_name.txt)
 
 # 定义进程名称
