@@ -8,7 +8,7 @@ process_name="bevm-v0.1.1-ubuntu20.04"
 
 while true
 do
-    # 检查进程是否在运行
+    # ... ... ... 检查进程是否在运行
     if pgrep -x "$process_name" > /dev/null
     then
         echo "进程 $process_name 已经在运行，无需启动新的进程。"
@@ -22,7 +22,7 @@ After=network.target
 [Service]
 User=root
 WorkingDirectory=/root
-ExecStart=/root/bevm-v0.1.1-ubuntu20.04 --chain=testnet --name="$node_name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
+ExecStart=/root/bevm-v0.1.1-ubuntu20.04 --chain=testnet ... ... ... --name="$node_name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit ... ... ... 0"
 Restart=always
 StandardOutput=file:/root/bevm.out.log
 StandardError=file:/root/bevm.err.log
@@ -35,11 +35,15 @@ EOT
         sudo systemctl daemon-reload
 
         # 启动服务并设置开机自启
-        sudo systemctl start $process_name
-        sudo systemctl enable $process_name
-
-        echo "进程 $process_name 保护启动成功！"
+        if sudo systemctl start $process_name
+        then
+            sudo systemctl enable $process_name
+            echo "进程 $process_name 启动成功！"
+        else
+            echo "进程 $process_name 启动失败！"
+            echo "失败详情："
+            sudo journalctl -xe
+        fi
     fi
-
     sleep 60
 done
