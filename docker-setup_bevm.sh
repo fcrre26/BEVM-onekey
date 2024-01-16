@@ -1,7 +1,7 @@
 #!/bin/bash
 
-LOG_FILE="deploy.log"
-NODE_NAME_FILE="node_names.txt"
+LOG_FILE="/root/deploy.log"
+NODE_NAME_FILE="/root/node_names.txt"
 
 # 错误处理函数
 handle_error() {
