@@ -30,3 +30,5 @@ sudo systemctl daemon-reload
 # 启动服务并设置开机自启
 sudo systemctl start $process_name
 sudo systemctl enable $process_name
+
+echo "进程守护已经成功开启！"
