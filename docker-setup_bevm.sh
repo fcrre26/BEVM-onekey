@@ -64,22 +64,6 @@ sudo tee /etc/docker/daemon.json > /dev/null <<EOF
 }
 EOF
 
-# 检查 cgroup 是否正确挂载
-if ! mount | grep cgroup; then
-  echo "cgroup 未正确挂载，正在修改 /etc/fstab 文件..."
-  echo "cgroup /sys/fs/cgroup cgroup defaults 0 0" >> /etc/fstab
-  mount -a
-  echo "cgroup 已成功挂载"
-fi
-
-# 检查内核参数配置
-if ! grep -q "cgroup_enable=memory swapaccount=1" /etc/default/grub; then
-  echo "正在修改内核启动参数..."
-  sed -i 's/GRUB_CMDLINE_LINUX="\(.*\)"/GRUB_CMDLINE_LINUX="\1 cgroup_enable=memory swapaccount=1"/' /etc/default/grub
-  update-grub
-  echo "内核参数配置已更新"
-fi
-
 # 拉取 Docker 镜像并运行容器
 for ((i=1; i<=$node_count; i++)); do
   name=$(sed -n "${i}p" "$NODE_NAME_FILE")  # 从文件中读取节点名称
