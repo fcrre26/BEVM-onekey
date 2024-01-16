@@ -3,6 +3,12 @@
 # 定义保存节点名称的文件路径
 NODE_NAME_FILE=/root/node_names.txt
 
+# 打开防火墙端口
+sudo ufw allow 2022
+sudo ufw allow 8086
+sudo ufw allow 8087
+sudo ufw status
+
 # 生成一个随机的节点名称
 function generateNodeName(){
   name=$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 10)
