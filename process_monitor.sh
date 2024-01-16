@@ -3,13 +3,16 @@
 # 从文件中获取节点名称
 node_name=$(cat /root/node_name.txt)
 
+# 定义进程名称
+process_name="bevm-v0.1.1-ubuntu20.04"
+
 # 安装supervisord
 sudo apt-get update
 sudo apt-get install supervisor
 
 # 创建supervisord配置文件
 cat <<EOT >> /etc/supervisor/conf.d/process_monitor.conf
-[program:bevm]
+[program:$process_name]
 command=/root/bevm-v0.1.1-ubuntu20.04 --chain=testnet --name="$node_name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
 autostart=true
 autorestart=true
