@@ -17,6 +17,8 @@ done
 sudo ufw allow 20222
 sudo ufw allow 8086
 sudo ufw allow 8087
+sudo ufw allow 30333
+sudo ufw allow 30334
 sudo ufw status
 
 # 安装 Docker
