@@ -3,12 +3,14 @@
 # 定义保存节点名称的文件路径
 NODE_NAME_FILE=/root/node_names.txt
 
-# ... ... ... 生成一个随机的节点名称
-# 生成一个随机的节点名称
-function generateNodeName(){
-  name=$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 10)
-  echo $name
-}
+# 获取节点名称并写入文件
+> "$NODE_NAME_FILE"  # 清空节点名称文件
+for ((i=1; i<=$NODE_COUNT; i++)); do
+  read -p "请输入第 $i 个节点的名称: " node_name
+  node_name=${node_name// /}  # 移除空格
+  echo "$node_name" >> "$NODE_NAME_FILE"
+  log_message "添加节点名称: $node_name"
+done
 
 # 检查容器的资源使用情况
 function ... ... ... checkResourceUsage(){
