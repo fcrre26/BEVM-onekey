@@ -25,5 +25,4 @@ sudo supervisorctl reread
 sudo supervisorctl update
 
 # 设置supervisord开机自启
-sudo ln -s /etc/supervisor/supervisord.conf /etc/init.d/supervisord
 sudo systemctl enable supervisord
