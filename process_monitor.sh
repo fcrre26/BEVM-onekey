@@ -9,6 +9,10 @@ process_name="bevm-v0.1.1-ubuntu20.04"
 # 停止旧的进程
 sudo systemctl stop $process_name
 
+# 添加延迟
+sleep 60
+
+
 # 创建systemd服务文件
 cat <<EOT >> /etc/systemd/system/$process_name.service
 [Unit]
