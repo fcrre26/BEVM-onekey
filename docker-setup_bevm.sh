@@ -29,9 +29,21 @@ for ((i=1; i<=$node_count; i++)); do
   log_message "添加节点名称: $node_name"
 done
 
-# 更新内核
-sudo apt update
-sudo apt upgrade
+# 检查内核参数配置
+if ! grep -q "cgroup_enable=memory swapaccount=1" /etc/default/grub; then
+  echo "正在修改内核启动参数..."
+  sed -i 's/GRUB_CMDLINE_LINUX="\(.*\)"/GRUB_CMDLINE_LINUX="\1 cgroup_enable=memory swapaccount=1"/' /etc/default/grub
+  update-grub
+  echo "内核参数配置已更新"
+fi
+
+# 检查 cgroup 是否正确挂载
+if ! mount | grep cgroup; then
+  echo "cgroup 未正确挂载，正在修改 /etc/fstab 文件..."
+  echo "cgroup /sys/fs/cgroup cgroup defaults 0 0" >> /etc/fstab
+  mount -a
+  echo "cgroup 已成功挂载"
+fi
 
 # 安装 Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
