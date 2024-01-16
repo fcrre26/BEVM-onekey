@@ -12,7 +12,6 @@ sudo systemctl stop $process_name
 # 添加延迟
 sleep 60
 
-
 # 创建systemd服务文件
 cat <<EOT >> /etc/systemd/system/$process_name.service
 [Unit]
