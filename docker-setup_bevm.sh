@@ -29,6 +29,10 @@ for ((i=1; i<=$node_count; i++)); do
   log_message "添加节点名称: $node_name"
 done
 
+# 更新内核
+sudo apt update
+sudo apt upgrade
+
 # 安装 Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
