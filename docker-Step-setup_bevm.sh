@@ -33,13 +33,23 @@ sudo apt install docker.io -y
 sudo docker pull btclayer2/bevm:v0.1.1
 
 # 运行容器
-for ((i = 1; i <= NODE_COUNT; i++)); do
-  node_name=$(sed -n "${i}p" "$NODE_NAME_FILE")
-  echo "启动容器 $node_name 中..."
-  sudo docker run -d --name $node_name btclayer2/bevm:v0.1.1 bevm --chain=testnet --name="$node_name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
-  echo "容器 $node_name 启动完成"
-  echo "容器 $node_name CPU 占比信息:"
-  docker stats --no-stream $node_name --format "table {{.Name}}\t{{.CPUPerc}}"
+total_cpu=0  # 初始化总CPU占比
+threshold=80  # CPU占比阈值
+while [ $total_cpu -lt $((NODE_COUNT * 80)) ]; do  # 当总CPU占比小于所有节点数乘以80时循环
+  for ((i = 1; i <= NODE_COUNT; i++)); do  # 遍历所有节点
+    node_name=$(sed -n "${i}p" "$NODE_NAME_FILE")  # 获取节点名称
+    cpu=$(docker stats --no-stream $node_name --format "{{.CPUPerc}}" | sed 's/%//')  # 获取节点的CPU占比
+    total_cpu=$((total_cpu + cpu))  # 累加总CPU占比
+    if [ $total_cpu -ge $((NODE_COUNT * threshold)) ]; then  # 如果总CPU占比超过阈值
+      echo "总CPU占比已经超过阈值，等待一段时间再继续启动容器"
+      sleep 10  # 等待10秒
+      total_cpu=0  # 重置总CPU占比
+      break  # 跳出当前循环
+    fi
+    echo "启动容器 $node_name 中..."
+    sudo docker run -d --name $node_name btclayer2/bevm:v0.1.1 bevm --chain=testnet --name="$node_name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
+    echo "容器 $node_name 启动完成"
+  done
 done
 
 # 输出部署完成的消息以及节点列表
