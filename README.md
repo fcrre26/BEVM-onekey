@@ -29,7 +29,7 @@
 
 
 
-6、docker限制内存，交换空间命令，可以手工输入指定数值：
+6、docker限制内存，交换空间命令（交换空间=节点数*限制内存），可以手工输入指定数值：
 
      wget https://raw.githubusercontent.com/fcrre26/BEVM-onekey/main/input-docker_script.sh && chmod +x input-docker_script.sh && ./input-docker_script.sh
 
