@@ -27,6 +27,7 @@
 
     wget https://raw.githubusercontent.com/fcrre26/BEVM-onekey/main/docker_script.sh && chmod +x docker_script.sh && ./docker_script.sh
 
+
 6、docker限制内存，交换空间命令，可以手工输入指定数值：
 
    wget https://raw.githubusercontent.com/fcrre26/BEVM-onekey/main/input-input-docker_script.sh && chmod +x input-docker_script.sh && ./input-docker_script.sh
