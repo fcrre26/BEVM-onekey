@@ -23,6 +23,10 @@
 
     wget https://raw.githubusercontent.com/fcrre26/BEVM-onekey/main/docker-process_monitor.sh && chmod +x docker-process_monitor.sh && ./docker-process_monitor.sh
 
+5、docker限制内存500M，交换空间1G命令：
+
+    wget https://raw.githubusercontent.com/fcrre26/BEVM-onekey/main/docker_script.sh && chmod +x docker_script.sh && ./docker_script.sh
+
 
 三、VPS的选用：
     官方建议ubuntu20.04;2核2G，硬盘300G。
