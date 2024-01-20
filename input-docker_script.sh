@@ -13,10 +13,6 @@ if ! docker ps -a; then
   exit 1
 fi
 
-# 打印容器列表详情
-echo "容器列表详情："
-docker ps -a
-
 # 停止所有容器
 echo "正在停止所有容器..."
 if ! docker stop $(docker ps -aq); then
