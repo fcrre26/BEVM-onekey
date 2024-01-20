@@ -25,7 +25,7 @@
 
 5、docker限制内存500M，交换空间1G命令：
 
-    wget https://raw.githubusercontent.com/fcrre26/BEVM-onekey/main/docker_script.sh && chmod +x docker_script.sh && ./docker_script.sh
+     wget https://raw.githubusercontent.com/fcrre26/BEVM-onekey/main/docker_script.sh && chmod +x docker_script.sh && ./docker_script.sh
 
 
 6、docker限制内存，交换空间命令，可以手工输入指定数值：
