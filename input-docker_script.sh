@@ -1,8 +1,10 @@
 #!/bin/bash
 
 # 手工录入限制内存和交换空间大小
-read -p "你想限制容器内存是多少M？" memory_limit
-read -p "你想限制交换空间是多少M？" swap_limit
+read -p "你想限制容器内存是多少MB？" memory_limit_mb
+memory_limit=$((memory_limit_mb * 1024 * 1024))  # 将MB转换为字节
+read -p "你想限制交换空间是多少MB？" swap_limit_mb
+swap_limit=$((swap_limit_mb * 1024 * 1024))  # 将MB转换为字节
 
 # 检索所有的容器
 echo "正在检索所有的容器..."
