@@ -32,9 +32,24 @@ check_container_status
 start_stopped_containers
 
 # 将脚本加入systemd服务
-# 这里假设脚本名为docker_monitor.sh，你需要根据实际情况修改
-cp /path/to/your/docker_monitor.sh /etc/systemd/system/
-systemctl enable docker_monitor.sh
+# 创建systemd服务文件
+cat <<EOF > /etc/systemd/system/docker_monitor.service
+[Unit]
+Description=Docker Monitor Service
+After=docker.service
+
+[Service]
+Type=simple
+ExecStart=/root/docker_monitor.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 启用并启动服务
+systemctl enable docker_monitor.service
+systemctl start docker_monitor.service
 
 # 每分钟自动检查容器状态
 # 这里使用while循环，每隔60秒执行一次检查
