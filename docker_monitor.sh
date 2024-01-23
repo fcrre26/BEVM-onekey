@@ -3,6 +3,9 @@
 # 定义日志文件路径
 LOG_FILE="/root/docker_status.log"
 
+# 打印提示信息
+echo "docker守护已经成功开启，可以随时查看日志！"
+
 # 检查容器状态并记录日志函数
 check_container_status() {
   container_status=$(docker ps -q | xargs docker inspect -f '{{.State.Running}}' 2>/dev/null)
