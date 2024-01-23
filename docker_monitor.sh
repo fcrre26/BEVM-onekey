@@ -3,9 +3,6 @@
 # 定义日志文件路径
 LOG_FILE="/root/docker_status.log"
 
-# 检查容器状态
-check_container_status
-
 # 检查容器状态并记录日志函数
 check_container_status() {
   container_status=$(docker ps --format "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}" 2>/dev/null)
@@ -28,6 +25,9 @@ start_stopped_containers() {
     echo "$(date) - Start result: $start_result" >> "$LOG_FILE"
   fi
 }
+
+# 检查容器状态
+check_container_status
 
 # 启动停止的容器
 start_stopped_containers
