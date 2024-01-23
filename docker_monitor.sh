@@ -3,9 +3,12 @@
 # 定义日志文件路径
 LOG_FILE="/root/docker_status.log"
 
+# 检查容器状态
+check_container_status
+
 # 检查容器状态并记录日志函数
 check_container_status() {
-  container_status=$(docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}" 2>/dev/null)
+  container_status=$(docker ps --format "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}" 2>/dev/null)
   if [ -z "$container_status" ]; then
     echo "$(date) - No running containers found" >> "$LOG_FILE"
   else
@@ -16,16 +19,15 @@ check_container_status() {
 
 # 启动停止的容器并记录日志函数
 start_stopped_containers() {
-  stopped_containers=$(docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}" --filter "status=exited" 2>/dev/null)
+  all_containers=$(docker ps -a --format "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}" 2>/dev/null)
+  echo "$(date) - All containers: $all_containers" >> "$LOG_FILE"
+  stopped_containers=$(docker ps -a --format "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}" --filter "status=exited" 2>/dev/null)
   if [ -n "$stopped_containers" ]; then
     echo "$(date) - Starting stopped containers: $stopped_containers" >> "$LOG_FILE"
     start_result=$(docker start $stopped_containers 2>&1)
     echo "$(date) - Start result: $start_result" >> "$LOG_FILE"
   fi
 }
-
-# 检查容器状态
-check_container_status
 
 # 启动停止的容器
 start_stopped_containers
