@@ -5,19 +5,19 @@ LOG_FILE="/root/docker_status.log"
 
 # 检查容器状态并记录日志函数
 check_container_status() {
-  container_status=$(docker ps --format "table ... ... ... ... ... ... ... {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}" 2>/dev/null)
+  container_status=$(docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}" 2>/dev/null)
   if [ -z "$container_status" ]; then
     echo "$(date) - No running containers found" >> "$LOG_FILE"
   else
-    echo ... ... ... ... ... ... ... ... "$(date) - Running containers: $container_status" >> "$LOG_FILE"
+    echo "$(date) - Running containers: $container_status" >> "$LOG_FILE"
   fi
 }
 
 # 启动停止的容器并记录日志函数
 start_stopped_containers() {
-  stopped_containers=$(docker ps -a --format ... ... ... ... ... ... ... "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}" --filter "status=exited" 2>/dev/null)
+  stopped_containers=$(docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}" --filter "status=exited" 2>/dev/null)
   if [ -n "$stopped_containers" ]; then
-    echo "$(date) - Starting stopped containers: ... ... ... ... ... ... ... $stopped_containers" >> "$LOG_FILE"
+    echo "$(date) - Starting stopped containers: $stopped_containers" >> "$LOG_FILE"
     docker start $stopped_containers
   fi
 }
@@ -29,21 +29,23 @@ check_container_status
 start_stopped_containers
 
 # 每分钟自动检查容器状态
-while ... ... ... ... true; do
+while true; do
   check_container_status
   start_stopped_containers
-  sleep ... ... ... ... 60
+  sleep 60
 done
 
 # 将脚本加入systemd服务
 # 创建systemd服务文件
 cat <<EOF > /etc/systemd/system/docker_monitor.service
 [Unit]
-Description=Docker Monitor ... 每分钟自动检查容器状态
+Description=Docker Monitor Service
+After=docker.service
 
 [Service]
 Type=simple
 ExecStart=/root/docker_monitor.sh
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
@@ -54,4 +56,4 @@ systemctl enable docker_monitor.service
 systemctl start docker_monitor.service
 
 # 打印提示信息
-echo  "docker守护已经成功开启，可以随时查看日志！"
+echo "docker守护已经成功开启，可以随时查看日志！"
