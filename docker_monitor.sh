@@ -3,6 +3,9 @@
 # 定义日志文件路径
 LOG_FILE="/root/docker_status.log"
 
+# 定义容器状态检查间隔
+CHECK_INTERVAL="1m"
+
 # 检查容器状态并记录日志函数
 check_container_status() {
   container_status=$(docker ps --format "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}" 2>/dev/null)
