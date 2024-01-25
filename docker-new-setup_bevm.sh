@@ -48,6 +48,10 @@ for ((i = 1; i <= NODE_COUNT; i++)); do
   docker stats --no-stream $node_name --format "table {{.Name}}\t{{.CPUPerc}}"
 done
 
+# 检查内存限制是否起效并打印容器列表详情
+echo "正在检查内存限制是否起效并打印容器列表详情..."
+docker stats --no-stream $(docker ps -aq)
+
 # 输出部署完成的消息以及节点列表
-echo "节点列表:"
+echo "部署成功，请查看节点列表:"
 cat $NODE_NAME_FILE
