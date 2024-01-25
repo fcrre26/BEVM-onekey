@@ -18,6 +18,12 @@ for ((i=1; i<=$NODE_COUNT; i++)); do
   echo "添加节点名称: $node_name"
 done
 
+# 手工录入限制内存和交换空间大小
+read -p "你想限制容器内存是多少MB？" memory_limit_mb
+memory_limit=${memory_limit_mb}M  # 使用手工录入的内存限制
+read -p "你想限制交换空间是多少MB？" swap_limit_mb
+swap_limit=${swap_limit_mb}M  # 使用手工录入的交换空间限制
+
 # 更新软件包
 sudo apt update
 
@@ -38,7 +44,7 @@ sudo docker pull btclayer2/bevm:v0.1.1
 for ((i = 1; i <= NODE_COUNT; i++)); do
   node_name=$(sed -n "${i}p" "$NODE_NAME_FILE")
   echo "启动容器 $node_name 中..."
-  sudo docker run -d --name $node_name btclayer2/bevm:v0.1.1 bevm --chain=testnet --name="$node_name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
+  sudo docker run -d --name $node_name --cpus=1 --memory=$memory_limit --memory-swap=$swap_limit btclayer2/bevm:v0.1.1 bevm --chain=testnet --name="$node_name" --pruning=archive --telemetry-url "wss://telemetry.bevm.io/submit 0"
   echo "容器 $node_name 启动完成"
   echo "容器 $node_name CPU 占比信息:"
   docker stats --no-stream $node_name --format "table {{.Name}}\t{{.CPUPerc}}"
